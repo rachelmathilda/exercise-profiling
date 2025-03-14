@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author muhammad.khadafi
@@ -28,11 +29,11 @@ public class StudentService {
         List<StudentCourse> studentCourses = new ArrayList<>();
         for (Student student : students) {
             List<StudentCourse> studentCoursesByStudent = studentCourseRepository.findByStudentId(student.getId());
-            for (StudentCourse studentCourseByStudent : studentCoursesByStudent) {
-                StudentCourse studentCourse = new StudentCourse();
-                studentCourse.setStudent(student);
-                studentCourse.setCourse(studentCourseByStudent.getCourse());
-                studentCourses.add(studentCourse);
+            for (StudentCourse existingStudentCourse : studentCoursesByStudent) {
+                if (existingStudentCourse.getStudent() == null) {
+                    existingStudentCourse.setStudent(student);
+                }
+                studentCourses.add(existingStudentCourse);
             }
         }
         return studentCourses;
@@ -40,11 +41,10 @@ public class StudentService {
 
     public Optional<Student> findStudentWithHighestGpa() {
         List<Student> students = studentRepository.findAll();
-        Student highestGpaStudent = null;
-        double highestGpa = 0.0;
-        for (Student student : students) {
-            if (student.getGpa() > highestGpa) {
-                highestGpa = student.getGpa();
+        Student highestGpaStudent = students.get(0);
+        for (int i = 1; i < students.size(); i++) {
+            Student student = students.get(i);
+            if (student.getGpa() > highestGpaStudent.getGpa()) {
                 highestGpaStudent = student;
             }
         }
@@ -53,11 +53,14 @@ public class StudentService {
 
     public String joinStudentNames() {
         List<Student> students = studentRepository.findAll();
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (Student student : students) {
-            result += student.getName() + ", ";
+            result.append(student.getName()).append(", ");
         }
-        return result.substring(0, result.length() - 2);
+        if (result.length() > 2) {
+            result.setLength(result.length() - 2);
+        }
+        return result.toString();
     }
 }
 
