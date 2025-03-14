@@ -33,11 +33,10 @@ public class StudentService {
 
     public Optional<Student> findStudentWithHighestGpa() {
         List<Student> students = studentRepository.findAll();
-        Student highestGpaStudent = null;
-        double highestGpa = 0.0;
-        for (Student student : students) {
-            if (student.getGpa() > highestGpa) {
-                highestGpa = student.getGpa();
+        Student highestGpaStudent = students.get(0);
+        for (int i = 1; i < students.size(); i++) {
+            Student student = students.get(i);
+            if (student.getGpa() > highestGpaStudent.getGpa()) {
                 highestGpaStudent = student;
             }
         }
