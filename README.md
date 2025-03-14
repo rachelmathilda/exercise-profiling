@@ -27,3 +27,14 @@ in your application?
    from performance testing and profiling? How do you ensure the changes you make do
    not affect the application's functionality?
 
+### sebelum optimisasi
+/all-student
+![all student jmeter](data/all_student_jm.png)
+
+/all-student-name
+![all student name jmeter](data/all_student_name_jm.png)
+
+/highest-gpa
+![highest gpa jmeter](data/highest_gpa_jm.png)
+### sesudah optimisasi
+

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author muhammad.khadafi
@@ -25,17 +26,9 @@ public class StudentService {
 
     public List<StudentCourse> getAllStudentsWithCourses() {
         List<Student> students = studentRepository.findAll();
-        List<StudentCourse> studentCourses = new ArrayList<>();
-        for (Student student : students) {
-            List<StudentCourse> studentCoursesByStudent = studentCourseRepository.findByStudentId(student.getId());
-            for (StudentCourse studentCourseByStudent : studentCoursesByStudent) {
-                StudentCourse studentCourse = new StudentCourse();
-                studentCourse.setStudent(student);
-                studentCourse.setCourse(studentCourseByStudent.getCourse());
-                studentCourses.add(studentCourse);
-            }
-        }
-        return studentCourses;
+        return students.stream()
+                .flatMap(student -> studentCourseRepository.findByStudentId(student.getId()).stream())
+                .collect(Collectors.toList());
     }
 
     public Optional<Student> findStudentWithHighestGpa() {
@@ -53,11 +46,14 @@ public class StudentService {
 
     public String joinStudentNames() {
         List<Student> students = studentRepository.findAll();
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (Student student : students) {
-            result += student.getName() + ", ";
+            result.append(student.getName()).append(", ");
         }
-        return result.substring(0, result.length() - 2);
+        if (result.length() > 2) {
+            result.setLength(result.length() - 2);
+        }
+        return result.toString();
     }
 }
 
