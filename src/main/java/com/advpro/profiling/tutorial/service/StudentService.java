@@ -26,9 +26,17 @@ public class StudentService {
 
     public List<StudentCourse> getAllStudentsWithCourses() {
         List<Student> students = studentRepository.findAll();
-        return students.stream()
-                .flatMap(student -> studentCourseRepository.findByStudentId(student.getId()).stream())
-                .collect(Collectors.toList());
+        List<StudentCourse> studentCourses = new ArrayList<>();
+        for (Student student : students) {
+            List<StudentCourse> studentCoursesByStudent = studentCourseRepository.findByStudentId(student.getId());
+            for (StudentCourse existingStudentCourse : studentCoursesByStudent) {
+                if (existingStudentCourse.getStudent() == null) {
+                    existingStudentCourse.setStudent(student);
+                }
+                studentCourses.add(existingStudentCourse);
+            }
+        }
+        return studentCourses;
     }
 
     public Optional<Student> findStudentWithHighestGpa() {
